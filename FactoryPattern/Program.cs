@@ -1,5 +1,6 @@
 ﻿using System;
 using FactoryPattern.Models;
+using FactoryPattern.Shipping.Factories;
 
 namespace FactoryPattern
 {
@@ -38,7 +39,7 @@ namespace FactoryPattern
             order.LineItems.Add(new Item("CONSULTING", "Building a website", 100m), 1);
             #endregion
 
-            var cart = new ShoppingCart(order);
+            var cart = new ShoppingCart(order, new StandardShippingProviderFactory());
 
             var shippingLabel = cart.FinalizeOrder();
 

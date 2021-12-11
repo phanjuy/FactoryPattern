@@ -1,14 +1,15 @@
 ﻿using System;
 using FactoryPattern.Enums;
 
-namespace FactoryPattern.Shipping
+namespace FactoryPattern.Shipping.Factories
 {
-    public class ShippingProviderFactory
+    public class StandardShippingProviderFactory : ShippingProviderFactory
     {
-        public static ShippingProvider CreateShippingProvider(string country)
+        protected override ShippingProvider CreateShippingProvider(string country)
         {
             ShippingProvider shippingProvider;
 
+            #region Create Shipping Provider
             if (country == "Australia")
             {
                 #region Australia Post Shipping Provider
@@ -72,6 +73,7 @@ namespace FactoryPattern.Shipping
             {
                 throw new NotSupportedException("No shipping provider found for origin country");
             }
+            #endregion
 
             return shippingProvider;
         }
