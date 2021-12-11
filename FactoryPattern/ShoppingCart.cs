@@ -1,5 +1,4 @@
-﻿using System;
-using FactoryPattern.Enums;
+﻿using FactoryPattern.Enums;
 using FactoryPattern.Models;
 using FactoryPattern.Shipping;
 
@@ -16,73 +15,7 @@ namespace FactoryPattern
 
         public string FinalizeOrder()
         {
-            #region Create Shipping Provider
-            ShippingProvider shippingProvider;
-
-            if (_order.Sender.Country == "Australia")
-            {
-                #region Australia Post Shipping Provider
-                var shippingCostCalculator = new ShippingCostCalculator(
-                    internationalShippingFee: 250,
-                    extraWeightFee: 500)
-                {
-                    ShippingType = ShippingType.Standard
-                };
-
-                var customsHandlingOptions = new CustomsHandlingOptions
-                {
-                    TaxOptions = TaxOptions.PrePaid
-                };
-
-                var insuranceOptions = new InsuranceOptions
-                {
-                    ProviderHasInsurance = false,
-                    ProviderHasExtendedInsurance = false,
-                    ProviderRequiresReturnOnDamage = false
-                };
-
-                shippingProvider = new AustraliaPostShippingProvider(
-                    "CLIENT_ID",
-                    "SECRET",
-                    shippingCostCalculator,
-                    customsHandlingOptions,
-                    insuranceOptions);
-                #endregion
-            }
-            else if (_order.Sender.Country == "Sweden")
-            {
-                #region Swedish Postal Service Shipping Provider
-                var shippingCostCalculator = new ShippingCostCalculator(
-                    internationalShippingFee: 50,
-                    extraWeightFee: 100)
-                {
-                    ShippingType = ShippingType.Express
-                };
-
-                var customsHandlingOptions = new CustomsHandlingOptions
-                {
-                    TaxOptions = TaxOptions.PayOnArrival
-                };
-
-                var insuranceOptions = new InsuranceOptions
-                {
-                    ProviderHasInsurance = true,
-                    ProviderHasExtendedInsurance = false,
-                    ProviderRequiresReturnOnDamage = false
-                };
-
-                shippingProvider = new SwedishPostalServiceShippingProvider(
-                    "API_KEY",
-                    shippingCostCalculator,
-                    customsHandlingOptions,
-                    insuranceOptions);
-                #endregion
-            }
-            else
-            {
-                throw new NotSupportedException("No shipping provider found for origin country");
-            }
-            #endregion
+            var shippingProvider = ShippingProviderFactory.CreateShippingProvider(_order.Sender.Country);
 
             _order.ShippingStatus = ShippingStatus.ReadyForShipment;
 
