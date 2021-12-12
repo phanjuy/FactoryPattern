@@ -1,17 +1,17 @@
 ﻿using FactoryPattern.Enums;
 using FactoryPattern.Models;
-using FactoryPattern.Shipping.Factories;
+using FactoryPattern.Purchase;
 
 namespace FactoryPattern
 {
     public class ShoppingCart
     {
         private readonly Order _order;
-        private readonly ShippingProviderFactory _factory;
+        private readonly IPurchaseFactory _factory;
 
         public ShoppingCart(
             Order order,
-            ShippingProviderFactory factory)
+            IPurchaseFactory factory)
         {
             _order = order;
             _factory = factory;
@@ -19,11 +19,18 @@ namespace FactoryPattern
 
         public string FinalizeOrder()
         {
-            var shippingProvider = _factory.GetShippingProvider(_order.Sender.Country);
+            var invoice = _factory.CreateInvoice(_order);
+            invoice.GenerateInvoice();
+
+            var summary = _factory.CreateSummary(_order);
+            summary.Send();
 
             _order.ShippingStatus = ShippingStatus.ReadyForShipment;
 
-            return shippingProvider.GenerateShippingLabelFor(_order);
+            var shippingProvider = _factory.CreateShippingProvider(_order);
+            var label = shippingProvider.GenerateShippingLabelFor(_order);
+
+            return label;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using FactoryPattern.Models;
-using FactoryPattern.Shipping.Factories;
+using FactoryPattern.Purchase;
 
 namespace FactoryPattern
 {
@@ -39,7 +39,14 @@ namespace FactoryPattern
             order.LineItems.Add(new Item("CONSULTING", "Building a website", 100m), 1);
             #endregion
 
-            var cart = new ShoppingCart(order, new StandardShippingProviderFactory());
+            IPurchaseFactory purchaseFactory = order.Sender.Country switch
+            {
+                "Sweden" => new SwedenPurchaseFactory(),
+                "Australia" => new AustraliaPurchaseFactory(),
+                _ => throw new NotSupportedException("Sender country has no purchase provider")
+            };
+
+            var cart = new ShoppingCart(order, purchaseFactory);
 
             var shippingLabel = cart.FinalizeOrder();
 
