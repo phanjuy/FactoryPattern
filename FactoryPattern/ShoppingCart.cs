@@ -1,4 +1,5 @@
-﻿using FactoryPattern.Enums;
+﻿using System;
+using FactoryPattern.Enums;
 using FactoryPattern.Models;
 using FactoryPattern.Purchase;
 
@@ -19,6 +20,11 @@ namespace FactoryPattern
 
         public string FinalizeOrder()
         {
+            if (_order.ShippingStatus == ShippingStatus.ReadyForShipment)
+            {
+                throw new InvalidOperationException();
+            }
+
             var invoice = _factory.CreateInvoice(_order);
             invoice.GenerateInvoice();
 
