@@ -39,12 +39,13 @@ namespace FactoryPattern
             order.LineItems.Add(new Item("CONSULTING", "Building a website", 100m), 1);
             #endregion
 
-            IPurchaseFactory purchaseFactory = order.Sender.Country switch
+            var factoryProvider = new PurchaseFactoryProvider();
+            var purchaseFactory = factoryProvider.CreateFactoryFor(order.Sender.Country);
+
+            if (purchaseFactory is null)
             {
-                "Sweden" => new SwedenPurchaseFactory(),
-                "Australia" => new AustraliaPurchaseFactory(),
-                _ => throw new NotSupportedException("Sender country has no purchase provider")
-            };
+                throw new NotSupportedException("Sender country has no purchase provider");
+            }
 
             var cart = new ShoppingCart(order, purchaseFactory);
 
